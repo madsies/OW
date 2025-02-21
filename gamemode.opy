@@ -28,7 +28,7 @@ rule "super jump":
 */
 
 rule "enableHeroes":
-    @Event 
+    @Event global
     getAllPlayers().setAllowedHeroes(HERO_POOL)
 
 rule "hero_swap":
@@ -42,9 +42,7 @@ rule "hero_swap":
         eventPlayer.playerStatusText = null
         eventPlayer.player_cooldown_one = 0
         eventPlayer.dynamicAmmo = 0
-    
-
-    
+     
 
 /*
     ##############################################################################################
@@ -56,9 +54,17 @@ rule "setup_ana":
     @Event eachPlayer
     @Condition eventPlayer.getCurrentHero() == Hero.ANA
     @Hero ana
-    eventPlayer.setMaxAmmo(0, 10)
     eventPlayer.setAmmo(0, 10)
+    eventPlayer.dynamicAmmo = 10
     eventPlayer.setMaxHealth((225/eventPlayer.getMaxHealth())*100)
+
+rule "reload_ana":
+    @Event eachPlayer
+    @Condition eventPlayer.getCurrentHero() == Hero.ANA
+    @Condition eventPlayer.isReloading()
+    @Hero ana
+    wait(0.7)
+    eventPlayer.setAmmo(0, eventPlayer.dynamicAmmo)
 
 rule "chargeShot_ana":
     @Event eachPlayer
@@ -75,9 +81,11 @@ rule "fire_ana":
     @Condition eventPlayer.getCurrentHero() == Hero.ANA
     @Condition eventPlayer.isHoldingButton(Button.PRIMARY_FIRE)
     if (eventPlayer.chargedShot_ana):
+        eventPlayer.setStatusEffect(eventPlayer, Status.STUNNED, 0.4)
         wait(0.7) # Ana is a projectile hero, silly.
         eventPlayer.chargedShot_ana = false
         destroyAllHudTexts()
+        
 
 rule "fire_charge_ana":
     @Event playerDealtDamage
