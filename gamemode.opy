@@ -3,34 +3,62 @@
 
 globalvar tick = 0
 globalvar ANA_CHARGE_COST = 5
+globalvar HERO_POOL = [Hero.ANA]
 
 # Player vars
 
+playervar hero = null
 playervar chargedShot_ana = false
 playervar playerStatusText = null
 playervar player_cooldown_one = getTotalTimeElapsed()
+playervar dynamicAmmo = 0
 
 # Subroutines 
-
-def superJump():
-
 
 
 # Rules
 
+/*
 rule "super jump":
     @Event eachPlayer
     @Condition eventPlayer.isJumping()
     eventPlayer.startAcceleration(eventPlayer.getFacingDirection(), 50, 50, Relativity.TO_WORLD, AccelReeval.DIRECTION_RATE_AND_MAX_SPEED)
     waitUntil(eventPlayer.isOnGround(), 3)
     eventPlayer.stopAcceleration()
+*/
 
+rule "enableHeroes":
+    @Event 
+    getAllPlayers().setAllowedHeroes(HERO_POOL)
 
-rule "ana setup":
+rule "hero_swap":
+    @Event eachPlayer
+    if (eventPlayer.getCurrentHero() != eventPlayer.hero):
+    
+        eventPlayer.hero = eventPlayer.getCurrentHero()
+
+        # Reset player vars
+        eventPlayer.chargedShot_ana = false
+        eventPlayer.playerStatusText = null
+        eventPlayer.player_cooldown_one = 0
+        eventPlayer.dynamicAmmo = 0
+    
+
+    
+
+/*
+    ##############################################################################################
+    ANA
+    ##############################################################################################
+*/
+
+rule "setup_ana":
     @Event eachPlayer
     @Condition eventPlayer.getCurrentHero() == Hero.ANA
     @Hero ana
-    eventPlayer.setAmmo(0, 69)
+    eventPlayer.setMaxAmmo(0, 10)
+    eventPlayer.setAmmo(0, 10)
+    eventPlayer.setMaxHealth((225/eventPlayer.getMaxHealth())*100)
 
 rule "chargeShot_ana":
     @Event eachPlayer
@@ -41,7 +69,6 @@ rule "chargeShot_ana":
         eventPlayer.chargedShot_ana = true
         hudSubtext(eventPlayer, "Charged shot", HudPosition.TOP, 2, Color.TEAM_1, HudReeval.NONE)
         eventPlayer.player_cooldown_one = getTotalTimeElapsed()
-
         
 rule "fire_ana":
     @Event eachPlayer
