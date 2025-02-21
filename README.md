@@ -13,6 +13,7 @@
 ### Ana
 
 ```
-Charged Shot (Interact):
-Ana consumes 5 ammo to charge her next shot, this does double damage or healing. Missing consumes the shot
+NEW! Charged Shot (Interact):
+Ana consumes 5 ammo to charge her next shot.
+Deals double damage or healing. Missing consumes the shot.
 ```
